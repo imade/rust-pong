@@ -18,9 +18,9 @@ const BALL_RADIUS: f32 = 25.;
 struct Ball {
     x: f32,
     y: f32,
-    dx: f32, // direction on x axis
-    dy: f32, // direction on y axis
-    speed: f32,
+    dx: f32,    // direction on x axis
+    dy: f32,    // direction on y axis
+    speed: f32, // how many pixels ball moves per frame
 }
 
 impl Ball {
