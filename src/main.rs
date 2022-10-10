@@ -18,8 +18,9 @@ const BALL_RADIUS: f32 = 25.;
 struct Ball {
     x: f32,
     y: f32,
-    _dx: f32, // direction on x axis
-    _dy: f32, // direction on y axis
+    dx: f32, // direction on x axis
+    dy: f32, // direction on y axis
+    speed: f32,
 }
 
 impl Ball {
@@ -27,9 +28,15 @@ impl Ball {
         Self {
             x,
             y,
-            _dx: 0.,
-            _dy: 0.,
+            dx: 0.,
+            dy: 0.,
+            speed: 0.,
         }
+    }
+
+    fn update(&mut self) {
+        self.x = self.x + (self.dx * self.speed);
+        self.y = self.y + (self.dy * self.speed);
     }
 
     fn draw(&self) {
@@ -49,7 +56,10 @@ fn window_conf() -> Conf {
 
 #[macroquad::main(window_conf)]
 async fn main() {
-    let ball = Ball::new(WINDOW_WIDTH_HALF, WINDOW_HEIGHT_HALF);
+    let mut ball = Ball::new(WINDOW_WIDTH_HALF, WINDOW_HEIGHT_HALF);
+    ball.dx = 1.;
+    ball.dy = 1.;
+    ball.speed = 5.;
 
     loop {
         clear_background(GREEN);
@@ -79,6 +89,7 @@ async fn main() {
             WHITE,
         );
 
+        ball.update();
         ball.draw();
 
         next_frame().await
