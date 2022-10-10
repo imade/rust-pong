@@ -12,6 +12,31 @@ const RECT_HEIGHT: f32 = 80.;
 const RECT_WIDTH: f32 = 20.;
 const RECT_HEIGHT_HALF: f32 = RECT_HEIGHT / 2.;
 
+// Ball constants:
+const BALL_RADIUS: f32 = 25.;
+
+struct Ball {
+    x: f32,
+    y: f32,
+    _dx: f32, // direction on x axis
+    _dy: f32, // direction on y axis
+}
+
+impl Ball {
+    fn new(x: f32, y: f32) -> Self {
+        Self {
+            x,
+            y,
+            _dx: 0.,
+            _dy: 0.,
+        }
+    }
+
+    fn draw(&self) {
+        draw_circle(self.x, self.y, BALL_RADIUS, WHITE);
+    }
+}
+
 fn window_conf() -> Conf {
     Conf {
         window_title: "Rust Pong".to_string(),
@@ -24,6 +49,8 @@ fn window_conf() -> Conf {
 
 #[macroquad::main(window_conf)]
 async fn main() {
+    let ball = Ball::new(WINDOW_WIDTH_HALF, WINDOW_HEIGHT_HALF);
+
     loop {
         clear_background(GREEN);
 
@@ -51,6 +78,8 @@ async fn main() {
             RECT_HEIGHT,
             WHITE,
         );
+
+        ball.draw();
 
         next_frame().await
     }
