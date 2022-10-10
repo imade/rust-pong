@@ -1,5 +1,5 @@
 # rust-pong
-Simple 2D retro Pong game written in Rust language using macroquad library
+Simple 2D retro Pong game written in Rust language using [macroquad](https://github.com/not-fl3/macroquad) library
 
 ## Local development setup
 ```sh
