@@ -11,6 +11,8 @@ const RECT_PADDING: f32 = 5.;
 const RECT_HEIGHT: f32 = 80.;
 const RECT_WIDTH: f32 = 20.;
 const RECT_HEIGHT_HALF: f32 = RECT_HEIGHT / 2.;
+const RECT_Y_CENTERED: f32 = WINDOW_HEIGHT_HALF - RECT_HEIGHT_HALF;
+const RECT_SPEED: f32 = 10.;
 
 // Ball constants:
 const BALL_RADIUS: f32 = 25.;
@@ -55,6 +57,22 @@ impl Ball {
     }
 }
 
+struct Player {
+    x: f32,
+    y: f32,
+    dy: f32, // direction on y axis
+}
+
+impl Player {
+    fn new(x: f32, y: f32) -> Self {
+        Self { x, y, dy: 0. }
+    }
+
+    fn draw(&self) {
+        draw_rectangle(self.x, self.y, RECT_WIDTH, RECT_HEIGHT, WHITE);
+    }
+}
+
 fn window_conf() -> Conf {
     Conf {
         window_title: "Rust Pong".to_string(),
@@ -67,6 +85,9 @@ fn window_conf() -> Conf {
 
 #[macroquad::main(window_conf)]
 async fn main() {
+    let player_left = Player::new(RECT_PADDING, RECT_Y_CENTERED);
+    let player_right = Player::new(WINDOW_WIDTH - RECT_WIDTH - RECT_PADDING, RECT_Y_CENTERED);
+
     let mut ball = Ball::new(WINDOW_WIDTH_HALF, WINDOW_HEIGHT_HALF);
     ball.dx = 1.;
     ball.dy = 1.;
@@ -84,21 +105,8 @@ async fn main() {
             WHITE,
         );
 
-        draw_rectangle(
-            RECT_PADDING,
-            WINDOW_HEIGHT_HALF - RECT_HEIGHT_HALF,
-            RECT_WIDTH,
-            RECT_HEIGHT,
-            WHITE,
-        );
-
-        draw_rectangle(
-            WINDOW_WIDTH - RECT_WIDTH - RECT_PADDING,
-            WINDOW_HEIGHT_HALF - RECT_HEIGHT_HALF,
-            RECT_WIDTH,
-            RECT_HEIGHT,
-            WHITE,
-        );
+        player_left.draw();
+        player_right.draw();
 
         ball.update();
         ball.draw();
