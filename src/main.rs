@@ -37,14 +37,17 @@ impl Ball {
     fn update(&mut self) {
         let new_x = self.x + (self.dx * self.speed);
         let new_y = self.y + (self.dy * self.speed);
-        if new_y < 0. || new_y >= WINDOW_HEIGHT {
+
+        if new_y - BALL_RADIUS < 0. || new_y + BALL_RADIUS >= WINDOW_HEIGHT {
             self.dy = self.dy * -1.;
         }
-        if new_x < 0. || new_x >= WINDOW_WIDTH {
+
+        if new_x - BALL_RADIUS < 0. || new_x + BALL_RADIUS >= WINDOW_WIDTH {
             self.dx = self.dx * -1.;
         }
-        self.x = new_x;
+
         self.y = new_y;
+        self.x = new_x;
     }
 
     fn draw(&self) {
