@@ -60,12 +60,22 @@ impl Ball {
 struct Player {
     x: f32,
     y: f32,
-    dy: f32, // direction on y axis
 }
 
 impl Player {
     fn new(x: f32, y: f32) -> Self {
-        Self { x, y, dy: 0. }
+        Self { x, y }
+    }
+
+    fn update(&mut self, direction: f32) {
+        let new_y = self.y + (RECT_SPEED * direction);
+        self.y = if new_y <= RECT_PADDING {
+            RECT_PADDING
+        } else if new_y + RECT_HEIGHT >= WINDOW_HEIGHT - RECT_PADDING {
+            WINDOW_HEIGHT - RECT_HEIGHT - RECT_PADDING
+        } else {
+            new_y
+        };
     }
 
     fn draw(&self) {
@@ -85,8 +95,8 @@ fn window_conf() -> Conf {
 
 #[macroquad::main(window_conf)]
 async fn main() {
-    let player_left = Player::new(RECT_PADDING, RECT_Y_CENTERED);
-    let player_right = Player::new(WINDOW_WIDTH - RECT_WIDTH - RECT_PADDING, RECT_Y_CENTERED);
+    let mut player_left = Player::new(RECT_PADDING, RECT_Y_CENTERED);
+    let mut player_right = Player::new(WINDOW_WIDTH - RECT_WIDTH - RECT_PADDING, RECT_Y_CENTERED);
 
     let mut ball = Ball::new(WINDOW_WIDTH_HALF, WINDOW_HEIGHT_HALF);
     ball.dx = 1.;
@@ -94,6 +104,24 @@ async fn main() {
     ball.speed = 5.;
 
     loop {
+        // Player left direction changes
+        let left_direction = if is_key_down(KeyCode::S) {
+            1.
+        } else if is_key_down(KeyCode::W) {
+            -1.
+        } else {
+            0.
+        };
+
+        // Player right direction changes
+        let right_direction: f32 = if is_key_down(KeyCode::Down) {
+            1.
+        } else if is_key_down(KeyCode::Up) {
+            -1.
+        } else {
+            0.
+        };
+
         clear_background(GREEN);
 
         draw_line(
@@ -105,10 +133,12 @@ async fn main() {
             WHITE,
         );
 
+        player_left.update(left_direction);
+        player_right.update(right_direction);
+        ball.update();
+
         player_left.draw();
         player_right.draw();
-
-        ball.update();
         ball.draw();
 
         next_frame().await
