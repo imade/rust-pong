@@ -106,6 +106,14 @@ impl Player {
         Self { x, y }
     }
 
+    fn left() -> Self {
+        Self::new(RECT_PADDING, RECT_Y_CENTERED)
+    }
+
+    fn right() -> Self {
+        Self::new(WINDOW_WIDTH - RECT_WIDTH - RECT_PADDING, RECT_Y_CENTERED)
+    }
+
     fn update(&mut self, direction: f32) {
         if direction == 0. {
             return;
@@ -137,8 +145,8 @@ fn window_conf() -> Conf {
 
 #[macroquad::main(window_conf)]
 async fn main() {
-    let mut player_left = Player::new(RECT_PADDING, RECT_Y_CENTERED);
-    let mut player_right = Player::new(WINDOW_WIDTH - RECT_WIDTH - RECT_PADDING, RECT_Y_CENTERED);
+    let mut player_left = Player::left();
+    let mut player_right = Player::right();
     let mut ball = Ball::new();
     ball.kick_off();
 
