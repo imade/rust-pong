@@ -57,6 +57,10 @@ impl Ball {
         y - BALL_RADIUS < 0. || y + BALL_RADIUS > WINDOW_HEIGHT
     }
 
+    fn collides_edge(x: f32) -> bool {
+        x - BALL_RADIUS < 0. || x + BALL_RADIUS > WINDOW_WIDTH
+    }
+
     fn update(&mut self, player_left: &Player, player_right: &Player) {
         let x = self.x + (self.direction_x * self.speed);
         let y = self.y + (self.direction_y * self.speed);
@@ -65,12 +69,10 @@ impl Ball {
             self.direction_x *= -1.;
         } else if Ball::collides_wall(y) {
             self.direction_y *= -1.;
+        } else if Ball::collides_edge(x) {
+            self.speed = 0.;
+            return;
         }
-
-        // TODO this should actually reset the game:
-        // if x - BALL_RADIUS < 0. || x + BALL_RADIUS >= WINDOW_WIDTH {
-        //     self.direction_x = self.direction_x * -1.;
-        // }
 
         self.y = y;
         self.x = x;
