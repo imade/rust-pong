@@ -20,36 +20,60 @@ const BALL_RADIUS: f32 = 25.;
 struct Ball {
     x: f32,
     y: f32,
-    dx: f32,    // direction on x axis
-    dy: f32,    // direction on y axis
-    speed: f32, // how many pixels ball moves per frame
+    direction_x: f32,
+    direction_y: f32,
+    speed: f32,
 }
 
 impl Ball {
-    fn new(x: f32, y: f32) -> Self {
+    fn new(x: f32, y: f32, direction_x: f32, direction_y: f32, speed: f32) -> Self {
         Self {
             x,
             y,
-            dx: 0.,
-            dy: 0.,
-            speed: 0.,
+            direction_x,
+            direction_y,
+            speed,
         }
     }
 
-    fn update(&mut self) {
-        let new_x = self.x + (self.dx * self.speed);
-        let new_y = self.y + (self.dy * self.speed);
+    fn inside_player_y_coords(y: f32, p: &Player) -> bool {
+        y > p.y && y < p.y + RECT_HEIGHT
+    }
 
-        if new_y - BALL_RADIUS < 0. || new_y + BALL_RADIUS >= WINDOW_HEIGHT {
-            self.dy = self.dy * -1.;
+    fn collides_left_player(x: f32, y: f32, p: &Player) -> bool {
+        x - BALL_RADIUS < p.x + RECT_WIDTH && Ball::inside_player_y_coords(y, p)
+    }
+
+    fn collides_right_player(x: f32, y: f32, p: &Player) -> bool {
+        x + BALL_RADIUS > p.x && Ball::inside_player_y_coords(y, p)
+    }
+
+    fn collides_players(x: f32, y: f32, player_left: &Player, player_right: &Player) -> bool {
+        Ball::collides_left_player(x, y, player_left)
+            || Ball::collides_right_player(x, y, player_right)
+    }
+
+    fn collides_wall(y: f32) -> bool {
+        y - BALL_RADIUS < 0. || y + BALL_RADIUS > WINDOW_HEIGHT
+    }
+
+    fn update(&mut self, player_left: &Player, player_right: &Player) {
+        let x = self.x + (self.direction_x * self.speed);
+        let y = self.y + (self.direction_y * self.speed);
+
+        if Ball::collides_players(x, y, player_left, player_right) {
+            self.direction_x *= -1.;
+        } else if Ball::collides_wall(y) {
+            self.direction_y *= -1.;
         }
 
-        if new_x - BALL_RADIUS < 0. || new_x + BALL_RADIUS >= WINDOW_WIDTH {
-            self.dx = self.dx * -1.;
-        }
+        // TODO this should actually reset the game:
+        // if x - BALL_RADIUS < 0. || x + BALL_RADIUS >= WINDOW_WIDTH {
+        //     self.direction_x = self.direction_x * -1.;
+        // }
 
-        self.y = new_y;
-        self.x = new_x;
+        self.y = y;
+        self.x = x;
     }
 
     fn draw(&self) {
@@ -68,6 +92,9 @@ impl Player {
     }
 
     fn update(&mut self, direction: f32) {
+        if direction == 0. {
+            return;
+        }
         let new_y = self.y + (RECT_SPEED * direction);
         self.y = if new_y <= RECT_PADDING {
             RECT_PADDING
@@ -97,14 +124,10 @@ fn window_conf() -> Conf {
 async fn main() {
     let mut player_left = Player::new(RECT_PADDING, RECT_Y_CENTERED);
     let mut player_right = Player::new(WINDOW_WIDTH - RECT_WIDTH - RECT_PADDING, RECT_Y_CENTERED);
-
-    let mut ball = Ball::new(WINDOW_WIDTH_HALF, WINDOW_HEIGHT_HALF);
-    ball.dx = 1.;
-    ball.dy = 1.;
-    ball.speed = 5.;
+    let mut ball = Ball::new(WINDOW_WIDTH_HALF, WINDOW_HEIGHT_HALF, 1., 1., 5.);
 
     loop {
-        // Player left direction changes
+        // Detect player left direction changes
         let left_direction = if is_key_down(KeyCode::S) {
             1.
         } else if is_key_down(KeyCode::W) {
@@ -113,7 +136,7 @@ async fn main() {
             0.
         };
 
-        // Player right direction changes
+        // Detect player right direction changes
         let right_direction: f32 = if is_key_down(KeyCode::Down) {
             1.
         } else if is_key_down(KeyCode::Up) {
@@ -135,7 +158,7 @@ async fn main() {
 
         player_left.update(left_direction);
         player_right.update(right_direction);
-        ball.update();
+        ball.update(&player_left, &player_right);
 
         player_left.draw();
         player_right.draw();
