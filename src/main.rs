@@ -26,14 +26,27 @@ struct Ball {
 }
 
 impl Ball {
-    fn new(x: f32, y: f32, direction_x: f32, direction_y: f32, speed: f32) -> Self {
+    fn new() -> Self {
         Self {
-            x,
-            y,
-            direction_x,
-            direction_y,
-            speed,
+            x: WINDOW_WIDTH_HALF,
+            y: WINDOW_HEIGHT_HALF,
+            direction_x: 1.,
+            direction_y: 1.,
+            speed: 0.,
         }
+    }
+
+    fn kick_off(&mut self) {
+        // TODO make ball kick-off direction random
+        self.speed = 5.;
+    }
+
+    fn reset(&mut self) {
+        self.x = WINDOW_WIDTH_HALF;
+        self.y = WINDOW_HEIGHT_HALF;
+        self.direction_x = 1.;
+        self.direction_y = 1.;
+        self.speed = 0.;
     }
 
     fn inside_player_y_coords(y: f32, p: &Player) -> bool {
@@ -126,9 +139,15 @@ fn window_conf() -> Conf {
 async fn main() {
     let mut player_left = Player::new(RECT_PADDING, RECT_Y_CENTERED);
     let mut player_right = Player::new(WINDOW_WIDTH - RECT_WIDTH - RECT_PADDING, RECT_Y_CENTERED);
-    let mut ball = Ball::new(WINDOW_WIDTH_HALF, WINDOW_HEIGHT_HALF, 1., 1., 5.);
+    let mut ball = Ball::new();
+    ball.kick_off();
 
     loop {
+        if is_key_down(KeyCode::R) {
+            ball.reset();
+            ball.kick_off();
+        }
+
         // Detect player left direction changes
         let left_direction = if is_key_down(KeyCode::S) {
             1.
