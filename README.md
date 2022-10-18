@@ -16,3 +16,8 @@ error: linking with `cc` failed: exit status: 1
 ```
 
 To fix this issue you need to install additional OS libraries as mentioned in [macroquad readme document](https://github.com/not-fl3/macroquad#linux).
+
+If you're on Ubuntu-like distribution you may also have to install build-essential:
+```sh
+sudo apt-get install build-essential
+```
