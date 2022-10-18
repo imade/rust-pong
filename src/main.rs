@@ -61,12 +61,12 @@ impl Ball {
     x + BALL_RADIUS > p.x && Ball::inside_player_y_coords(y, p)
   }
 
-  fn collides_players(x: f32, y: f32, player_left: &Player, player_right: &Player) -> bool {
-    Ball::collides_left_player(x, y, player_left) || Ball::collides_right_player(x, y, player_right)
+  fn collides_upper_wall(y: f32) -> bool {
+    y - BALL_RADIUS < 0.
   }
 
-  fn collides_wall(y: f32) -> bool {
-    y - BALL_RADIUS < 0. || y + BALL_RADIUS > WINDOW_HEIGHT
+  fn collides_lower_wall(y: f32) -> bool {
+    y + BALL_RADIUS > WINDOW_HEIGHT
   }
 
   fn collides_edge(x: f32) -> bool {
@@ -77,17 +77,27 @@ impl Ball {
     let x = self.x + (self.direction_x * self.speed);
     let y = self.y + (self.direction_y * self.speed);
 
-    if Ball::collides_players(x, y, player_left, player_right) {
-      self.direction_x *= -1.;
-    } else if Ball::collides_wall(y) {
-      self.direction_y *= -1.;
+    if Ball::collides_left_player(x, y, player_left) {
+      self.direction_x = 1.;
+      self.x = player_left.x + RECT_WIDTH + BALL_RADIUS;
+    } else if Ball::collides_right_player(x, y, player_right) {
+      self.direction_x = -1.;
+      self.x = player_right.x - BALL_RADIUS;
+    } else if Ball::collides_upper_wall(y) {
+      self.direction_y = 1.;
+      self.y = BALL_RADIUS;
+    } else if Ball::collides_lower_wall(y) {
+      self.direction_y = -1.;
+      self.y = WINDOW_HEIGHT - BALL_RADIUS;
     } else if Ball::collides_edge(x) {
       self.speed = 0.;
+      self.direction_x = 0.;
+      self.direction_y = 0.;
       return;
+    } else {
+      self.y = y;
+      self.x = x;
     }
-
-    self.y = y;
-    self.x = x;
   }
 
   fn draw(&self) {
