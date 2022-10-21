@@ -1,23 +1,19 @@
 # rust-pong
 Simple 2D retro Pong game written in Rust language using [macroquad](https://github.com/not-fl3/macroquad) library
 
-## Local development setup
+## Local setup
 ```sh
 git clone git@github.com:imade/rust-pong.git && cd rust-pong && cargo run --release
 ```
 
-## Troubleshooting
+⚠️ If you encounter errors with the `cargo` command then:
 
-### Linking with cc failed
-
-On Linux you might see the following error when you're trying to `cargo run` this project:
-```sh
-error: linking with `cc` failed: exit status: 1
-```
-
-To fix this issue you need to install additional OS libraries as mentioned in [macroquad readme document](https://github.com/not-fl3/macroquad#linux).
-
-If you're on Ubuntu-like distribution you may also have to install build-essential:
-```sh
-sudo apt-get install build-essential
-```
+1. If you are on Linux then check that you have [installed the necessary libraries](https://github.com/not-fl3/macroquad#linux) that macroquad needs.
+2. If you are on Debian / Ubuntu-like distribution then also install `build-essential`
+    ```sh
+    sudo apt-get install build-essential
+    ```
+3. If you are on Fedora then install `"Development Tools"`
+    ```
+    sudo dnf groupinstall "Development Tools"
+    ```
