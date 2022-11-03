@@ -60,26 +60,12 @@ async fn main() {
       circle.x += speed;
     }
 
-    // let collision = is_collision(&circle, &rect);
-    circle.collision_mode = true;
-    rect.collision_mode = true;
-
-    let circle_dbg = format!("{:?}", circle);
-    let rect_dbg = format!("{:?}", rect);
-
-    draw_text(&circle_dbg, 10., 20., 16., WHITE);
-    draw_text(&rect_dbg, 10., 40., 16., WHITE);
+    let collision = is_collision(&circle, &rect);
+    circle.collision_mode = collision;
+    rect.collision_mode = collision;
 
     circle.draw();
     rect.draw();
-
-    let x = circle.x.clamp(rect.x, rect.x + rect.w);
-    let y = circle.y.clamp(rect.y, rect.y + rect.h);
-    let dist = ((circle.x - x).powi(2) + (circle.y - y).powi(2)).sqrt();
-    let dist_dbg = format!("Distance is {}", dist);
-    let line_color = if dist <= circle.r { YELLOW } else { BLUE };
-    draw_text(&dist_dbg, 10., 60., 16., WHITE);
-    draw_line(circle.x, circle.y, x, y, 1., line_color);
 
     next_frame().await
   }
