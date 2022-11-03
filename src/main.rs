@@ -75,8 +75,11 @@ async fn main() {
 
     let x = circle.x.clamp(rect.x, rect.x + rect.w);
     let y = circle.y.clamp(rect.y, rect.y + rect.h);
-
-    draw_line(circle.x, circle.y, x, y, 1., BLUE);
+    let dist = ((circle.x - x).powi(2) + (circle.y - y).powi(2)).sqrt();
+    let dist_dbg = format!("Distance is {}", dist);
+    let line_color = if dist <= circle.r { YELLOW } else { BLUE };
+    draw_text(&dist_dbg, 10., 60., 16., WHITE);
+    draw_line(circle.x, circle.y, x, y, 1., line_color);
 
     next_frame().await
   }
